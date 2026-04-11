@@ -3,171 +3,763 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>My Public Site</title>
+  <title>Baker Benezzine</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:ital,wght@0,300;0,400;1,300&family=DM+Sans:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg1: #0f172a;
-      --bg2: #1e293b;
-      --card: rgba(255, 255, 255, 0.08);
-      --border: rgba(255, 255, 255, 0.14);
-      --text: #f8fafc;
-      --muted: #cbd5e1;
-      --accent: #38bdf8;
-      --shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+      --bg: #080a0f;
+      --surface: #0e1117;
+      --border: rgba(255,255,255,0.07);
+      --text: #eef0f4;
+      --muted: #6b7280;
+      --accent: #c8f135;
+      --accent2: #3b82f6;
+      --mono: 'DM Mono', monospace;
+      --sans: 'DM Sans', sans-serif;
+      --display: 'Syne', sans-serif;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
 
     body {
-      margin: 0;
-      min-height: 100vh;
-      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
       color: var(--text);
-      background:
-        radial-gradient(circle at top left, rgba(56, 189, 248, 0.18), transparent 30%),
-        linear-gradient(135deg, var(--bg1), var(--bg2));
-      display: grid;
-      place-items: center;
-      padding: 24px;
+      font-family: var(--sans);
+      font-weight: 300;
+      line-height: 1.7;
+      overflow-x: hidden;
     }
 
-    .card {
-      width: min(920px, 100%);
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 24px;
-      padding: 32px;
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(10px);
+    /* noise overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 999;
+      opacity: 0.4;
+    }
+
+    /* glow blob */
+    .blob {
+      position: fixed;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(200,241,53,0.06) 0%, transparent 70%);
+      border-radius: 50%;
+      top: -100px;
+      right: -100px;
+      pointer-events: none;
+      z-index: 0;
+      animation: drift 12s ease-in-out infinite alternate;
+    }
+
+    @keyframes drift {
+      from { transform: translate(0, 0); }
+      to   { transform: translate(-60px, 80px); }
+    }
+
+    /* layout */
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 28px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* nav */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      border-bottom: 1px solid var(--border);
+      background: rgba(8,10,15,0.85);
+      backdrop-filter: blur(16px);
+    }
+
+    .nav-inner {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 28px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-logo {
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      color: var(--accent);
+      letter-spacing: 0.05em;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 28px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      color: var(--muted);
+      text-decoration: none;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--text); }
+
+    /* hero */
+    .hero {
+      padding-top: 140px;
+      padding-bottom: 100px;
+      border-bottom: 1px solid var(--border);
     }
 
     .eyebrow {
-      color: var(--accent);
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
+      font-family: var(--mono);
       font-size: 0.78rem;
-      font-weight: 700;
-      margin-bottom: 12px;
+      color: var(--accent);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .eyebrow::before {
+      content: '';
+      display: inline-block;
+      width: 24px;
+      height: 1px;
+      background: var(--accent);
     }
 
     h1 {
-      margin: 0 0 12px;
-      font-size: clamp(2rem, 5vw, 4rem);
-      line-height: 1.05;
+      font-family: var(--display);
+      font-size: clamp(3.2rem, 8vw, 6.5rem);
+      font-weight: 800;
+      line-height: 0.95;
+      letter-spacing: -0.03em;
+      margin-bottom: 32px;
     }
 
-    p {
-      margin: 0;
+    h1 .line2 {
+      color: transparent;
+      -webkit-text-stroke: 1px rgba(255,255,255,0.25);
+    }
+
+    h1 .accent-word {
+      color: var(--accent);
+    }
+
+    .hero-desc {
+      max-width: 520px;
       color: var(--muted);
       font-size: 1.05rem;
-      line-height: 1.7;
-      max-width: 60ch;
+      margin-bottom: 40px;
     }
 
-    .counter {
-      margin-top: 28px;
+    .hero-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      border-radius: 999px;
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      text-decoration: none;
+      letter-spacing: 0.05em;
+      transition: all 0.2s;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      background: var(--surface);
+    }
+
+    .pill:hover {
+      border-color: rgba(255,255,255,0.2);
+      color: var(--text);
+      transform: translateY(-2px);
+    }
+
+    .pill.primary {
+      background: var(--accent);
+      color: #080a0f;
+      border-color: var(--accent);
+      font-weight: 400;
+    }
+
+    .pill.primary:hover {
+      background: #d4f550;
+      border-color: #d4f550;
+      color: #080a0f;
+    }
+
+    .pill svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+    /* status dot */
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-bottom: 40px;
+    }
+
+    .dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: pulse 2.4s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.7); }
+    }
+
+    /* sections */
+    section { padding: 80px 0; border-bottom: 1px solid var(--border); }
+
+    .section-label {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      margin-bottom: 48px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    h2 {
+      font-family: var(--display);
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 16px;
+    }
+
+    /* about */
+    .about-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-      gap: 14px;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      align-items: start;
     }
 
-    .unit {
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: 18px;
-      padding: 18px 14px;
-      text-align: center;
+    .about-text p {
+      color: var(--muted);
+      margin-bottom: 16px;
+      font-size: 1rem;
     }
 
-    .value {
-      display: block;
-      font-size: clamp(1.8rem, 3vw, 2.6rem);
+    .about-text p strong {
+      color: var(--text);
+      font-weight: 400;
+    }
+
+    .about-stats {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .stat-row:last-child { border-bottom: none; }
+
+    .stat-key {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .stat-val {
+      font-family: var(--mono);
+      font-size: 0.85rem;
+      color: var(--text);
+    }
+
+    /* skills */
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+    }
+
+    .skill-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+
+    .skill-card:hover {
+      border-color: rgba(200,241,53,0.3);
+      transform: translateY(-3px);
+    }
+
+    .skill-icon {
+      font-family: var(--mono);
+      font-size: 1.4rem;
+      margin-bottom: 12px;
+    }
+
+    .skill-title {
+      font-family: var(--display);
+      font-size: 1rem;
       font-weight: 700;
       margin-bottom: 6px;
     }
 
-    .label {
-      font-size: 0.9rem;
+    .skill-desc {
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* projects */
+    .project-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 32px;
+      margin-bottom: 16px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 24px;
+      align-items: start;
+      transition: border-color 0.2s, transform 0.2s;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .project-card:hover {
+      border-color: rgba(200,241,53,0.25);
+      transform: translateY(-3px);
+    }
+
+    .project-tag {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--accent);
+      background: rgba(200,241,53,0.08);
+      border: 1px solid rgba(200,241,53,0.2);
+      border-radius: 999px;
+      padding: 3px 12px;
+      letter-spacing: 0.08em;
+      margin-bottom: 12px;
+    }
+
+    .project-title {
+      font-family: var(--display);
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .project-desc {
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .project-arrow {
+      color: var(--muted);
+      font-size: 1.4rem;
+      transition: transform 0.2s, color 0.2s;
+      margin-top: 4px;
+    }
+
+    .project-card:hover .project-arrow {
+      transform: translate(3px, -3px);
+      color: var(--accent);
+    }
+
+    /* roadmap */
+    .roadmap {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .roadmap-item {
+      display: grid;
+      grid-template-columns: 120px 1px 1fr;
+      gap: 0 24px;
+      padding-bottom: 40px;
+    }
+
+    .roadmap-item:last-child { padding-bottom: 0; }
+
+    .roadmap-time {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--muted);
+      text-align: right;
+      padding-top: 4px;
+    }
+
+    .roadmap-line {
+      background: var(--border);
+      position: relative;
+    }
+
+    .roadmap-line::before {
+      content: '';
+      position: absolute;
+      top: 6px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 9px; height: 9px;
+      border-radius: 50%;
+      background: var(--accent);
+      border: 2px solid var(--bg);
+    }
+
+    .roadmap-content { padding-top: 0; }
+
+    .roadmap-title {
+      font-family: var(--display);
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .roadmap-desc {
+      font-size: 0.88rem;
+      color: var(--muted);
+    }
+
+    /* contact */
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+    }
+
+    .contact-card {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      text-decoration: none;
+      color: inherit;
+      transition: all 0.2s;
+    }
+
+    .contact-card:hover {
+      border-color: rgba(200,241,53,0.3);
+      transform: translateY(-3px);
+    }
+
+    .contact-platform {
+      font-family: var(--mono);
+      font-size: 0.7rem;
       color: var(--muted);
       text-transform: uppercase;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.12em;
     }
 
-    .footer {
-      margin-top: 20px;
+    .contact-handle {
+      font-family: var(--display);
+      font-size: 1rem;
+      font-weight: 700;
+      word-break: break-all;
+    }
+
+    /* footer */
+    footer {
+      padding: 40px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .footer-left {
+      font-family: var(--mono);
+      font-size: 0.75rem;
       color: var(--muted);
-      font-size: 0.95rem;
     }
 
-    code {
-      color: #e2e8f0;
-      background: rgba(255, 255, 255, 0.08);
-      padding: 2px 8px;
-      border-radius: 999px;
+    .footer-right {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    /* animations */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(24px);
+      animation: fadeUp 0.7s ease forwards;
+    }
+
+    @keyframes fadeUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .fade-in:nth-child(1) { animation-delay: 0.1s; }
+    .fade-in:nth-child(2) { animation-delay: 0.2s; }
+    .fade-in:nth-child(3) { animation-delay: 0.3s; }
+    .fade-in:nth-child(4) { animation-delay: 0.4s; }
+    .fade-in:nth-child(5) { animation-delay: 0.5s; }
+
+    @media (max-width: 640px) {
+      .about-grid { grid-template-columns: 1fr; }
+      .contact-grid { grid-template-columns: 1fr; }
+      .nav-links { display: none; }
+      h1 { font-size: 3rem; }
     }
   </style>
 </head>
 <body>
-  <main class="card">
-    <div class="eyebrow">Public site</div>
-    <h1>Your website is live.</h1>
-    <p>
-      This page shows exactly how long your site has existed. Change the date in
-      <code>siteCreatedAt</code> to the moment your website officially went live.
+
+<div class="blob"></div>
+
+<nav>
+  <div class="nav-inner">
+    <span class="nav-logo">baker.benezzine</span>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#roadmap">Roadmap</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="container">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="fade-in eyebrow">Based in Montréal, QC</div>
+    <h1 class="fade-in">
+      Baker<br>
+      <span class="line2">Bene<span class="accent-word">zzine</span></span>
+    </h1>
+    <div class="fade-in status">
+      <span class="dot"></span>
+      Actively learning — future ML engineer
+    </div>
+    <p class="fade-in hero-desc">
+      Aspiring machine learning engineer and builder. Currently sharpening my Python, working through math fundamentals, and building real projects from scratch.
     </p>
+    <div class="fade-in hero-links">
+      <a href="mailto:baker.benezzine@gmail.com" class="pill primary">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+        Get in touch
+      </a>
+      <a href="https://github.com/Beastgun21" target="_blank" class="pill">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></svg>
+        GitHub
+      </a>
+      <a href="https://www.instagram.com/baker_be21/" target="_blank" class="pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+        Instagram
+      </a>
+    </div>
+  </div>
 
-    <section class="counter" aria-label="Site age counter">
-      <div class="unit"><span class="value" id="days">0</span><span class="label">Days</span></div>
-      <div class="unit"><span class="value" id="hours">0</span><span class="label">Hours</span></div>
-      <div class="unit"><span class="value" id="minutes">0</span><span class="label">Minutes</span></div>
-      <div class="unit"><span class="value" id="seconds">0</span><span class="label">Seconds</span></div>
-    </section>
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="section-label">01 — About</div>
+    <div class="about-grid">
+      <div class="about-text">
+        <p>I'm a <strong>20-year-old developer from Montréal</strong> with a clear goal: study machine learning at Concordia University and build AI products that matter.</p>
+        <p>I started with HTML & CSS, moved into Python, and I'm now building real projects with APIs, data visualization, and clean code architecture.</p>
+        <p>I believe in <strong>learning by building</strong> — every project on my GitHub is a step toward the engineer I'm becoming.</p>
+      </div>
+      <div class="about-stats">
+        <div class="stat-row">
+          <span class="stat-key">Location</span>
+          <span class="stat-val">Montréal, QC 🇨🇦</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-key">Status</span>
+          <span class="stat-val">Pre-Cégep → Concordia</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-key">Goal</span>
+          <span class="stat-val">ML Engineer</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-key">Currently</span>
+          <span class="stat-val">Python + APIs</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-key">Next up</span>
+          <span class="stat-val">Pandas + NumPy</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-key">Email</span>
+          <span class="stat-val">baker.benezzine@gmail.com</span>
+        </div>
+      </div>
+    </div>
+  </section>
 
-    <div class="footer" id="created-text"></div>
-  </main>
+  <!-- SKILLS -->
+  <section id="skills">
+    <div class="section-label">02 — Skills</div>
+    <div class="skills-grid">
+      <div class="skill-card">
+        <div class="skill-icon">🐍</div>
+        <div class="skill-title">Python</div>
+        <div class="skill-desc">Functions, OOP, APIs, error handling, data structures, clean code patterns.</div>
+      </div>
+      <div class="skill-card">
+        <div class="skill-icon">🌐</div>
+        <div class="skill-title">HTML & CSS</div>
+        <div class="skill-desc">Semantic markup, responsive layouts, CSS variables, animations.</div>
+      </div>
+      <div class="skill-card">
+        <div class="skill-icon">📡</div>
+        <div class="skill-title">REST APIs</div>
+        <div class="skill-desc">Fetching, parsing JSON, error handling, building CLI tools around APIs.</div>
+      </div>
+      <div class="skill-card">
+        <div class="skill-icon">📊</div>
+        <div class="skill-title">Data Viz</div>
+        <div class="skill-desc">Matplotlib scatter plots, log scales, annotated charts.</div>
+      </div>
+      <div class="skill-card">
+        <div class="skill-icon">🔧</div>
+        <div class="skill-title">Git & GitHub</div>
+        <div class="skill-desc">Version control, committing, pushing, repo management.</div>
+      </div>
+      <div class="skill-card">
+        <div class="skill-icon">🧠</div>
+        <div class="skill-title">ML (learning)</div>
+        <div class="skill-desc">NumPy, Pandas, scikit-learn — actively studying the foundations.</div>
+      </div>
+    </div>
+  </section>
 
-  <script>
-    // Put your real launch date and time here.
-    // Format: year, monthIndex (0 = Jan), day, hour, minute, second
-    const siteCreatedAt = new Date(2026, 3, 9, 12, 0, 0);
+  <!-- PROJECTS -->
+  <section id="projects">
+    <div class="section-label">03 — Projects</div>
+    <a href="https://github.com/Beastgun21/Country_info_search" target="_blank" class="project-card">
+      <div>
+        <span class="project-tag">Python · REST API · Matplotlib</span>
+        <div class="project-title">Country Info Search</div>
+        <p class="project-desc">CLI tool that queries the REST Countries API to look up countries by name, capital, language, currency, and continent. Includes a log-log scatterplot for comparing population vs area across multiple countries.</p>
+      </div>
+      <div class="project-arrow">↗</div>
+    </a>
+    <a href="https://github.com/Beastgun21" target="_blank" class="project-card">
+      <div>
+        <span class="project-tag">Python · PokeAPI · In progress</span>
+        <div class="project-title">PokéDex CLI</div>
+        <p class="project-desc">Command-line Pokédex built on the PokéAPI. Displays stats, types, abilities, and evolutions. Built as a Python comeback project after a 6-month break.</p>
+      </div>
+      <div class="project-arrow">↗</div>
+    </a>
+  </section>
 
-    const daysEl = document.getElementById('days');
-    const hoursEl = document.getElementById('hours');
-    const minutesEl = document.getElementById('minutes');
-    const secondsEl = document.getElementById('seconds');
-    const createdTextEl = document.getElementById('created-text');
+  <!-- ROADMAP -->
+  <section id="roadmap">
+    <div class="section-label">04 — Roadmap</div>
+    <div class="roadmap">
+      <div class="roadmap-item">
+        <div class="roadmap-time">Now</div>
+        <div class="roadmap-line"></div>
+        <div class="roadmap-content">
+          <div class="roadmap-title">Python + APIs + Git</div>
+          <div class="roadmap-desc">Building real projects, learning clean code patterns, type hints, and version control.</div>
+        </div>
+      </div>
+      <div class="roadmap-item">
+        <div class="roadmap-time">2025 Winter</div>
+        <div class="roadmap-line"></div>
+        <div class="roadmap-content">
+          <div class="roadmap-title">Cégep — Math prerequisites</div>
+          <div class="roadmap-desc">SN5, calculus, linear algebra, and statistics to prepare for university ML courses.</div>
+        </div>
+      </div>
+      <div class="roadmap-item">
+        <div class="roadmap-time">2026</div>
+        <div class="roadmap-line"></div>
+        <div class="roadmap-content">
+          <div class="roadmap-title">Concordia University — CS/ML</div>
+          <div class="roadmap-desc">Applying to study machine learning at Concordia, Montréal — close to Mila AI Institute.</div>
+        </div>
+      </div>
+      <div class="roadmap-item">
+        <div class="roadmap-time">Future</div>
+        <div class="roadmap-line"></div>
+        <div class="roadmap-content">
+          <div class="roadmap-title">Build AI products</div>
+          <div class="roadmap-desc">Ship real ML-powered products. Eventually contribute to research or found something.</div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-    createdTextEl.textContent = `Created on ${siteCreatedAt.toLocaleString()}`;
+  <!-- CONTACT -->
+  <section id="contact">
+    <div class="section-label">05 — Contact</div>
+    <h2>Let's connect.</h2>
+    <p style="color:var(--muted); margin-bottom: 36px; font-size: 0.95rem;">Whether you want to collaborate, give feedback on my projects, or just talk ML — I'm always open.</p>
+    <div class="contact-grid">
+      <a href="mailto:baker.benezzine@gmail.com" class="contact-card">
+        <span class="contact-platform">Email</span>
+        <span class="contact-handle">baker.benezzine@gmail.com</span>
+      </a>
+      <a href="https://github.com/Beastgun21" target="_blank" class="contact-card">
+        <span class="contact-platform">GitHub</span>
+        <span class="contact-handle">@Beastgun21</span>
+      </a>
+      <a href="https://www.instagram.com/baker_be21/" target="_blank" class="contact-card">
+        <span class="contact-platform">Instagram</span>
+        <span class="contact-handle">@baker_be21</span>
+      </a>
+    </div>
+  </section>
 
-    function updateCounter() {
-      const now = new Date();
-      const diffMs = now - siteCreatedAt;
+  <footer>
+    <span class="footer-left">© 2026 Baker Benezzine</span>
+    <span class="footer-right">Montréal, QC — Built by hand</span>
+  </footer>
 
-      if (diffMs < 0) {
-        daysEl.textContent = '0';
-        hoursEl.textContent = '0';
-        minutesEl.textContent = '0';
-        secondsEl.textContent = '0';
-        createdTextEl.textContent = 'The launch date is set in the future.';
-        return;
-      }
-
-      const totalSeconds = Math.floor(diffMs / 1000);
-      const days = Math.floor(totalSeconds / 86400);
-      const hours = Math.floor((totalSeconds % 86400) / 3600);
-      const minutes = Math.floor((totalSeconds % 3600) / 60);
-      const seconds = totalSeconds % 60;
-
-      daysEl.textContent = String(days);
-      hoursEl.textContent = String(hours).padStart(2, '0');
-      minutesEl.textContent = String(minutes).padStart(2, '0');
-      secondsEl.textContent = String(seconds).padStart(2, '0');
-    }
-
-    updateCounter();
-    setInterval(updateCounter, 1000);
-  </script>
+</div>
 </body>
 </html>
